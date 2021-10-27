@@ -32,7 +32,7 @@ class FlutterNativeTimezone {
             [0] as String;
       } catch (e) {
         print('Unexpected error happened in parsing timezones. flutter_native_timezone.dart');
-        return 'Unknown';
+        return 'Unknown timezone from windows';
       }
     }
     final String? localTimezone = await _channel.invokeMethod("getLocalTimezone");
