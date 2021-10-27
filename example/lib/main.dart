@@ -46,15 +46,13 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Local timezone app'),
         ),
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Local timezone: $_timezone\n'),
-            Text('Available timezones:'),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _availableTimezones.length,
-                itemBuilder: (_, index) => Text(_availableTimezones[index]),
-              ),
-            )
+            SizedBox(height: 100),
+            Text('Local timezone from library: $_timezone\n'),
+            Text('Datetime.now().timezone: ${DateTime.now().timeZoneName}\n'),
+            Text('Datetime.now().timezone offset: ${DateTime.now().timeZoneOffset}\n'),
+            Expanded(child: Container()),
           ],
         ),
       ),

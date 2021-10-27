@@ -13,6 +13,10 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <chrono>
+#include <timezoneapi.h>
+#include <stringapiset.h>
+
 
 namespace {
 
@@ -56,17 +60,18 @@ FlutterNativeTimezonePlugin::~FlutterNativeTimezonePlugin() {}
 void FlutterNativeTimezonePlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  if (method_call.method_name().compare("getPlatformVersion") == 0) {
-    std::ostringstream version_stream;
-    version_stream << "Windows ";
-    if (IsWindows10OrGreater()) {
-      version_stream << "10+";
-    } else if (IsWindows8OrGreater()) {
-      version_stream << "8";
-    } else if (IsWindows7OrGreater()) {
-      version_stream << "7";
-    }
-    result->Success(flutter::EncodableValue(version_stream.str()));
+  if (method_call.method_name().compare("getWindowsStandardTimezone") == 0) {
+
+    DYNAMIC_TIME_ZONE_INFORMATION tzi;
+    GetDynamicTimeZoneInformation(&tzi);
+
+    auto timez = tzi.TimeZoneKeyName;
+    char ch[260];
+    char DefChar = ' ';
+    WideCharToMultiByte(CP_ACP,0,timez,-1, ch,260,&DefChar, NULL);
+
+    std::string ans(ch);
+    result->Success(flutter::EncodableValue(ans));
   } else {
     result->NotImplemented();
   }

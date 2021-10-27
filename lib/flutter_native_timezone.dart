@@ -9,8 +9,7 @@ import 'package:flutter_native_timezone/constants.dart';
 /// Class for getting the native timezone.
 ///
 class FlutterNativeTimezone {
-  static const MethodChannel _channel =
-      const MethodChannel('flutter_native_timezone');
+  static const MethodChannel _channel = const MethodChannel('flutter_native_timezone');
 
   static List<dynamic>? mappedTimezones;
 
@@ -18,22 +17,25 @@ class FlutterNativeTimezone {
   ///
   static Future<String> getLocalTimezone() async {
     if (Platform.isWindows) {
+      final String? windowsTimezone = await _channel.invokeMethod("getWindowsStandardTimezone");
+      if (windowsTimezone == null) {
+        throw ArgumentError(
+            "Invalid return from platform getWindowsStandardTimezone. Native Windows");
+      }
+
       if (mappedTimezones == null) {
         mappedTimezones = await json.decode(DATA_STR);
       }
 
       try {
-        var tz = DateTime.now().timeZoneName;
-        return mappedTimezones!
-            .firstWhere((map) => map['windowsName'] == tz)['iana'][0] as String;
+        return mappedTimezones!.firstWhere((map) => map['windowsName'] == windowsTimezone)['iana']
+            [0] as String;
       } catch (e) {
-        print(
-            'Unexpected error happened in parsing timezones. flutter_native_timezone.dart');
+        print('Unexpected error happened in parsing timezones. flutter_native_timezone.dart');
         return 'Unknown';
       }
     }
-    final String? localTimezone =
-        await _channel.invokeMethod("getLocalTimezone");
+    final String? localTimezone = await _channel.invokeMethod("getLocalTimezone");
     if (localTimezone == null) {
       throw ArgumentError("Invalid return from platform getLocalTimezone()");
     }
@@ -51,8 +53,7 @@ class FlutterNativeTimezone {
     final List<String>? availableTimezones =
         await _channel.invokeListMethod<String>("getAvailableTimezones");
     if (availableTimezones == null) {
-      throw ArgumentError(
-          "Invalid return from platform getAvailableTimezones()");
+      throw ArgumentError("Invalid return from platform getAvailableTimezones()");
     }
     return availableTimezones;
   }
